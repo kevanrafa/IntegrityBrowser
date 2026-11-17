@@ -1,0 +1,17 @@
+[package]
+name = "integrity-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Pure-Rust filtering, settings and local proxy engine for Integrity Browser"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+url = "2"
+dirs = "5"
+tokio = { version = "1", features = ["rt", "net", "io-util", "time", "sync", "macros"] }
+anyhow = "1"
+
+[dev-dependencies]
+tempfile = "3"

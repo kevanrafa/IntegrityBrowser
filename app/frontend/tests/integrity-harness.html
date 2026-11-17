@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Integrity self-test - Integrity Browser</title>
+  <link rel="stylesheet" href="../internal.css">
+  <link rel="stylesheet" href="integrity-harness.css">
+</head>
+<body class="harness">
+  <div class="harness-shell">
+    <header class="harness-head">
+      <div>
+        <h1>Integrity self-test</h1>
+        <p class="page-subtitle">
+          Each scenario creates a real overlay in this page, waits for the engine, and checks the
+          result. Positive scenarios should be neutralized; legitimate ones must be left alone.
+        </p>
+      </div>
+      <div class="harness-actions">
+        <button type="button" class="btn" id="run-checks">Run automated checks</button>
+        <button type="button" class="btn ghost" id="clear-results">Clear results</button>
+      </div>
+    </header>
+
+    <div class="harness-banner" id="engine-banner">
+      <span class="dot" id="engine-dot"></span>
+      <span id="engine-text">Waiting for the Integrity Protection engine…</span>
+    </div>
+
+    <div class="harness-stats" id="stats">
+      <div class="stat"><div class="stat-value" id="h-scanned">0</div><div class="stat-label">Scanned</div></div>
+      <div class="stat"><div class="stat-value" id="h-suspicious">0</div><div class="stat-label">Suspicious</div></div>
+      <div class="stat"><div class="stat-value" id="h-neutralized">0</div><div class="stat-label">Neutralized</div></div>
+      <div class="stat"><div class="stat-value" id="h-through">0</div><div class="stat-label">Click-throughs</div></div>
+      <div class="stat"><div class="stat-value" id="h-mode">—</div><div class="stat-label">Mode</div></div>
+    </div>
+
+    <div class="notice info harness-note">
+      The page survives because each scenario is removed after its check. If Integrity Protection is
+      off, a transparent test overlay will block this UI until it is removed automatically.
+    </div>
+
+    <div class="check-grid" id="checks"></div>
+
+    <div class="notice harness-note" id="summary" hidden></div>
+
+    <footer class="harness-foot">
+      <p class="tiny">
+        Scenario elements are marked <code>data-ib-scenario</code> and removed after each run. The
+        engine treats this page as a test page even though it is served from the internal origin.
+      </p>
+    </footer>
+  </div>
+
+  <div class="toast-stack" id="toasts" aria-live="polite"></div>
+
+  <script src="../internal.js"></script>
+  <script src="integrity-harness.js"></script>
+  <script src="../engine.js"></script>
+</body>
+</html>

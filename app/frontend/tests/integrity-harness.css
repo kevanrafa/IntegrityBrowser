@@ -1,0 +1,215 @@
+/* Integrity self-test page. Shared tokens come from internal.css. */
+
+body.harness {
+  overflow-x: hidden;
+}
+
+.harness-shell {
+  width: min(1080px, calc(100% - 56px));
+  margin: 0 auto;
+  padding: 34px 0 64px;
+}
+
+.harness-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.harness-head h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.15;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+}
+
+.harness-head .page-subtitle {
+  max-width: 640px;
+}
+
+.harness-actions {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.harness-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 16px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.028);
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.harness-banner.ready {
+  color: #b4e6d2;
+  border-color: rgba(126, 226, 184, 0.24);
+  background: rgba(126, 226, 184, 0.06);
+}
+
+.harness-banner.missing {
+  color: #e6cf9e;
+  border-color: rgba(255, 209, 102, 0.24);
+  background: rgba(255, 209, 102, 0.06);
+}
+
+.harness-banner .dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--muted-2);
+}
+
+.harness-banner.ready .dot {
+  background: var(--ok);
+  box-shadow: 0 0 10px rgba(126, 226, 184, 0.65);
+}
+
+.harness-banner.missing .dot {
+  background: var(--amber);
+}
+
+.harness-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.harness-stats .stat {
+  padding: 13px 14px;
+}
+
+.harness-stats .stat-value {
+  font-size: 21px;
+}
+
+.harness-note {
+  margin-bottom: 16px;
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 12px;
+}
+
+.check-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: 13px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0)),
+    var(--card);
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.check-card[data-state="running"] {
+  border-color: rgba(111, 157, 255, 0.4);
+  background: linear-gradient(180deg, rgba(111, 157, 255, 0.09), rgba(255, 255, 255, 0)), var(--card);
+}
+
+.check-card[data-state="pass"] {
+  border-color: rgba(126, 226, 184, 0.38);
+  background: linear-gradient(180deg, rgba(126, 226, 184, 0.08), rgba(255, 255, 255, 0)), var(--card);
+}
+
+.check-card[data-state="fail"] {
+  border-color: rgba(255, 131, 145, 0.42);
+  background: linear-gradient(180deg, rgba(255, 131, 145, 0.08), rgba(255, 255, 255, 0)), var(--card);
+}
+
+.check-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.check-title {
+  font-size: 13.5px;
+  font-weight: 620;
+}
+
+.check-expect {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.check-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.check-result {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+
+.check-card[data-state="pass"] .check-result {
+  color: var(--ok);
+}
+
+.check-card[data-state="fail"] .check-result {
+  color: var(--danger);
+}
+
+.check-card[data-state="running"] .check-result {
+  color: var(--blue);
+}
+
+.check-card .btn {
+  flex: 0 0 auto;
+}
+
+.harness-foot {
+  margin-top: 22px;
+}
+
+.harness-foot .tiny {
+  max-width: 680px;
+}
+
+#summary.ok {
+  border-color: rgba(126, 226, 184, 0.24);
+  background: rgba(126, 226, 184, 0.06);
+  color: #b4e6d2;
+}
+
+#summary.bad {
+  border-color: rgba(255, 131, 145, 0.3);
+  background: rgba(255, 131, 145, 0.07);
+  color: #f0b4bc;
+}
+
+@media (max-width: 820px) {
+  .harness-shell {
+    width: calc(100% - 32px);
+    padding-top: 24px;
+  }
+
+  .harness-head {
+    flex-direction: column;
+  }
+
+  .harness-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

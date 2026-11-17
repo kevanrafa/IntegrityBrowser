@@ -1,0 +1,44 @@
+! Integrity Browser - built-in tracking host list
+! Conservative host-level list for analytics and cross-site tracking.
+! Deliberately excludes social networks and CDNs that sites need to
+! function; users can add their own lists in Settings > Filter lists.
+!
+! Attribution: compiled for this project from publicly known tracking
+! endpoints. Add or replace lists in Settings > Filter lists.
+
+||adjust.com^
+||amplitude.com^
+||api.amplitude.com^
+||api.mixpanel.com^
+||api.segment.io^
+||app-measurement.com^
+||appsflyer.com^
+||branch.io^
+||business-api.tiktok.com^
+||clarity.ms^
+||connect.facebook.net^
+||crazyegg.com^
+||fs.fullstory.com^
+||fullstory.com^
+||google-analytics.com^
+||googletagmanager.com^
+||heap.io^
+||heapanalytics.com^
+||histats.com^
+||hotjar.com^
+||inspectlet.com^
+||kochava.com^
+||matomo.cloud^
+||mc.yandex.ru^
+||mixpanel.com^
+||mouseflow.com^
+||newrelic.com^
+||nr-data.net^
+||script.crazyegg.com^
+||script.hotjar.com^
+||segment.io^
+||singular.net^
+||statcounter.com^
+||static.hotjar.com^
+||umeng.com^
+||www.clarity.ms^

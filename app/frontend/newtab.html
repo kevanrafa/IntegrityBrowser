@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>New Tab - Integrity Browser</title>
+  <link rel="stylesheet" href="internal.css">
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body class="newtab">
+  <main class="nt-shell">
+    <section class="hero">
+      <div class="hero-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48">
+          <path d="M24 4.5 40 11.3v11.2c0 10-6.5 17.5-16 20.9-9.5-3.4-16-10.9-16-20.9V11.3L24 4.5Z" fill="url(#heroGrad)"/>
+          <path d="m16.4 24.1 4.8 4.8 10-10.1" fill="none" stroke="#07110f" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="heroGrad" x1="8" y1="6" x2="41" y2="43" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#7bf1cd"/>
+              <stop offset="1" stop-color="#5f93ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1>Integrity Browser</h1>
+      <p class="hero-copy">Privacy by default. Protection exactly where it matters.</p>
+
+      <div class="search" role="search">
+        <span class="search-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m13.2 13.2 3.3 3.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <input id="newtab-search" class="input" type="text" spellcheck="false" autocomplete="off"
+               placeholder="Search DuckDuckGo or enter an address" aria-label="Search or enter an address">
+        <button class="btn primary" id="newtab-go" type="button">Search</button>
+      </div>
+      <p class="search-note">Searches use DuckDuckGo. Requests pass through the local Integrity filter proxy.</p>
+
+      <div class="quick-grid">
+        <label class="quick" for="toggle-integrity">
+          <span class="quick-icon mint" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><path d="M10 2.4 16 5v4c0 3.6-2.4 6.4-6 7.6C6.4 15.4 4 12.6 4 9V5l6-2.6Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.2 10.1 9 11.9l3.8-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="quick-text"><strong>Integrity Protection</strong><small>Detect click-interception overlays</small></span>
+          <span class="switch"><input type="checkbox" id="toggle-integrity" checked><span></span></span>
+        </label>
+        <label class="quick" for="toggle-click-through">
+          <span class="quick-icon blue" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><path d="M4 10h9M10 6.5 13.5 10 10 13.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 3.5 3.5 7l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/></svg>
+          </span>
+          <span class="quick-text"><strong>Click-through</strong><small>Let blocked clicks reach the real target</small></span>
+          <span class="switch"><input type="checkbox" id="toggle-click-through" checked><span></span></span>
+        </label>
+        <label class="quick" for="toggle-adblock">
+          <span class="quick-icon amber" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m5.6 5.6 8.8 8.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="quick-text"><strong>Ad blocking</strong><small>Host-based ad filter lists</small></span>
+          <span class="switch"><input type="checkbox" id="toggle-adblock" checked><span></span></span>
+        </label>
+        <label class="quick" for="toggle-trackers">
+          <span class="quick-icon violet" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><path d="M10 3.2c-3.1 0-5.6 2.5-5.6 5.6 0 4.2 5.6 8 5.6 8s5.6-3.8 5.6-8c0-3.1-2.5-5.6-5.6-5.6Z" fill="none" stroke="currentColor" stroke-width="1.45"/><circle cx="10" cy="8.7" r="1.9" fill="none" stroke="currentColor" stroke-width="1.45"/></svg>
+          </span>
+          <span class="quick-text"><strong>Tracker blocking</strong><small>Stop known tracking hosts</small></span>
+          <span class="switch"><input type="checkbox" id="toggle-trackers" checked><span></span></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="stat-grid nt-stats" aria-label="Session privacy statistics">
+      <div class="stat"><div class="stat-value" id="stat-blocked">0</div><div class="stat-label">Requests blocked</div></div>
+      <div class="stat"><div class="stat-value" id="stat-ads">0</div><div class="stat-label">Ads blocked</div></div>
+      <div class="stat"><div class="stat-value" id="stat-trackers">0</div><div class="stat-label">Trackers blocked</div></div>
+      <div class="stat"><div class="stat-value" id="stat-inspected">0</div><div class="stat-label">Requests inspected</div></div>
+    </section>
+
+    <section class="nt-links">
+      <button class="link-card" id="open-settings" type="button">
+        <span class="link-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.6v2.1M10 15.3v2.1M2.6 10h2.1M15.3 10h2.1M4.8 4.8l1.5 1.5M13.7 13.7l1.5 1.5M15.2 4.8l-1.5 1.5M6.3 13.7l-1.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </span>
+        <span><strong>Settings</strong><small>Privacy, Integrity and filter lists</small></span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </button>
+      <button class="link-card" id="open-test" type="button">
+        <span class="link-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20"><path d="M7 3.5h6M8 3.5v5.1L4.6 15a1.4 1.4 0 0 0 1.2 2.1h8.4a1.4 1.4 0 0 0 1.2-2.1L12 8.6V3.5" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.4 12.7h7.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity=".6"/></svg>
+        </span>
+        <span><strong>Integrity self-test</strong><small>Exercise overlay detection in a sandbox page</small></span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </button>
+    </section>
+
+    <footer class="nt-footer">
+      <span class="chip on" id="proxy-chip">Local filter proxy active</span>
+      <span>Integrity Browser <span id="version">0.1.0</span> · No telemetry · No account</span>
+    </footer>
+  </main>
+
+  <div class="toast-stack" id="toasts" aria-live="polite"></div>
+  <script src="internal.js"></script>
+  <script src="newtab.js"></script>
+</body>
+</html>

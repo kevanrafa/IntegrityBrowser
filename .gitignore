@@ -1,0 +1,17 @@
+# Rust build output
+/target/
+**/*.rs.bk
+
+# Local settings / test artifacts
+.integrity-browser/
+*.log
+
+# Editors and OS files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Frontend tooling (the project currently has no bundler)
+node_modules/

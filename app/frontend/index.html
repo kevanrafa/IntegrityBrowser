@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Integrity Browser</title>
+  <link rel="stylesheet" href="chrome.css">
+</head>
+<body>
+  <header class="chrome" id="chrome">
+    <div class="tabstrip">
+      <div class="brand" title="Integrity Browser">
+        <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.2 20 5.6v5.7c0 5.1-3.3 8.9-8 10.5-4.7-1.6-8-5.4-8-10.5V5.6L12 2.2Z" fill="url(#brandGrad)"/>
+          <path d="m8.4 12 2.4 2.4 4.9-5" fill="none" stroke="#081018" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandGrad" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#67e8c3"/>
+              <stop offset="1" stop-color="#4f8cff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="brand-name">Integrity</span>
+      </div>
+
+      <div class="tabs" id="tabs" role="tablist" aria-label="Tabs"></div>
+
+      <button class="icon-btn new-tab" id="new-tab" title="New tab (Ctrl+T)" aria-label="New tab">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <div class="tabstrip-spacer"></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="nav-group">
+        <button class="icon-btn" id="back" title="Back (Alt+Left)" aria-label="Back" disabled>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="icon-btn" id="forward" title="Forward (Alt+Right)" aria-label="Forward" disabled>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="icon-btn" id="reload" title="Reload (Ctrl+R)" aria-label="Reload">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 7.2A6 6 0 1 0 16 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M15.7 3.8v3.6h-3.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="icon-btn" id="home" title="New tab / home" aria-label="Home">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m3.5 9.5 6.5-6 6.5 6V16a1 1 0 0 1-1 1h-3.2v-4.2H8.2V17H4.5a1 1 0 0 1-1-1V9.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="address-wrap" id="address-wrap">
+        <span class="security-icon" id="security-icon" title="Connection information">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.2 16 4.8v4.1c0 3.7-2.4 6.5-6 7.7-3.6-1.2-6-4-6-7.7V4.8l6-2.6Z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m7.4 9.6 1.8 1.8 3.5-3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <input id="address" type="text" spellcheck="false" autocomplete="off" autocapitalize="off"
+               placeholder="Search DuckDuckGo or enter an address" aria-label="Address and search bar">
+        <span class="address-hint" id="address-hint"></span>
+      </div>
+
+      <button class="tool-pill" id="integrity-btn" title="Integrity Protection settings">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.4 16 5v4c0 3.6-2.4 6.4-6 7.6C6.4 15.4 4 12.6 4 9V5l6-2.6Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.2 10.1 9 11.9l3.8-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="tool-label">Integrity</span>
+        <span class="count-badge" id="integrity-count">0</span>
+      </button>
+
+      <button class="tool-pill" id="privacy-btn" title="Privacy and blocking settings">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.4 7.8h13.2M3.4 12.2h13.2M10 2.8c-2.2 2.1-2.2 12.3 0 14.4 2.2-2.1 2.2-12.3 0-14.4Z" fill="none" stroke="currentColor" stroke-width="1.35"/></svg>
+        <span class="tool-label">Privacy</span>
+        <span class="count-badge" id="privacy-count">0</span>
+      </button>
+
+      <button class="icon-btn" id="menu-btn" title="Settings (Ctrl+,)" aria-label="Settings">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="load-bar" id="load-bar"></div>
+  </header>
+
+  <script src="chrome.js"></script>
+</body>
+</html>

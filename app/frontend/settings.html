@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Settings - Integrity Browser</title>
+  <link rel="stylesheet" href="internal.css">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body class="settings">
+  <div class="settings-shell">
+    <aside class="side">
+      <div class="side-brand">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.2 20 5.6v5.7c0 5.1-3.3 8.9-8 10.5-4.7-1.6-8-5.4-8-10.5V5.6L12 2.2Z" fill="url(#sideGrad)"/>
+          <path d="m8.4 12 2.4 2.4 4.9-5" fill="none" stroke="#081018" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="sideGrad" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#67e8c3"/><stop offset="1" stop-color="#4f8cff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Integrity</span>
+      </div>
+
+      <nav class="side-nav" id="settings-nav" aria-label="Settings sections">
+        <button type="button" data-section="general" class="active">General</button>
+        <button type="button" data-section="privacy">Privacy</button>
+        <button type="button" data-section="integrity">Integrity</button>
+        <button type="button" data-section="filters">Filter lists</button>
+        <button type="button" data-section="about">About</button>
+      </nav>
+
+      <div class="side-foot">
+        <button type="button" class="btn primary done-btn" id="done-side">Done</button>
+        <p class="tiny">Settings are saved automatically.</p>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="page-head">
+        <div>
+          <h1 id="section-title">General</h1>
+          <p class="page-subtitle" id="section-subtitle">Browser status and session summary.</p>
+        </div>
+        <button type="button" class="btn" id="done-top">Back to browsing</button>
+      </header>
+
+      <div id="warning-area" class="section hidden"></div>
+
+      <!-- ------------------------------------------------------------ general -->
+      <section class="panel" data-panel="general">
+        <div class="section">
+          <div class="section-title"><h2>Session</h2></div>
+          <div class="card rows">
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Integrity Browser <span class="chip" id="version-chip">0.1.0</span></div>
+                <div class="row-desc">A privacy-first desktop browser with click-interception protection.</div>
+              </div>
+              <div class="row-side"><span class="chip on" id="proxy-status">Filter proxy active</span></div>
+            </div>
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Default search engine</div>
+                <div class="row-desc">Address-bar queries go to DuckDuckGo. Unknown schemes are converted to searches instead of being navigated.</div>
+              </div>
+              <div class="row-side"><span class="chip">DuckDuckGo</span></div>
+            </div>
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Local filter proxy</div>
+                <div class="row-desc mono" id="proxy-url">http://127.0.0.1:…</div>
+              </div>
+              <div class="row-side"><span class="chip on">Loopback only</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h2>This session</h2>
+            <span class="tiny">Counters reset when you press reset in Privacy.</span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-value" id="g-blocked">0</div><div class="stat-label">Blocked</div></div>
+            <div class="stat"><div class="stat-value" id="g-ads">0</div><div class="stat-label">Ads</div></div>
+            <div class="stat"><div class="stat-value" id="g-trackers">0</div><div class="stat-label">Trackers</div></div>
+            <div class="stat"><div class="stat-value" id="g-inspected">0</div><div class="stat-label">Inspected</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><h2>Quick actions</h2></div>
+          <div class="action-grid">
+            <button type="button" class="action-card" id="general-test">
+              <strong>Run the Integrity self-test</strong>
+              <span>Open a sandbox page with transparent overlays, fake click-jackers and legitimate dialogs.</span>
+            </button>
+            <button type="button" class="action-card" id="general-privacy">
+              <strong>Review privacy settings</strong>
+              <span>Toggle ad and tracker blocking, inspect recent blocked hosts and add custom rules.</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------ privacy -->
+      <section class="panel hidden" data-panel="privacy">
+        <div class="section">
+          <div class="section-title">
+            <h2>Blocking</h2>
+            <span class="tiny">Blocking happens in the local proxy before a connection leaves the machine.</span>
+          </div>
+          <div class="card rows">
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Block ads <span class="chip" id="adblock-chip">on</span></div>
+                <div class="row-desc">Uses the built-in ad host list and any enabled custom lists.</div>
+              </div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="adblock-toggle" checked><span></span></label></div>
+            </div>
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Block trackers <span class="chip" id="tracker-chip">on</span></div>
+                <div class="row-desc">Blocks known analytics, advertising and fingerprinting hosts at the connection level.</div>
+              </div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="tracker-toggle" checked><span></span></label></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h2>Session statistics</h2>
+            <button type="button" class="btn small" id="reset-stats">Reset counters</button>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-value" id="p-blocked">0</div><div class="stat-label">Blocked</div></div>
+            <div class="stat"><div class="stat-value" id="p-ads">0</div><div class="stat-label">Ads</div></div>
+            <div class="stat"><div class="stat-value" id="p-trackers">0</div><div class="stat-label">Trackers</div></div>
+            <div class="stat"><div class="stat-value" id="p-inspected">0</div><div class="stat-label">Inspected</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h2>Recently blocked</h2>
+            <span class="tiny">Newest first. Host names only; HTTPS content is never decrypted.</span>
+          </div>
+          <div class="card list" id="recent-list">
+            <div class="empty">Nothing blocked yet in this session.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h2>Custom blocked hosts</h2>
+            <span class="tiny">Exact host or parent domain. Subdomains are covered.</span>
+          </div>
+          <div class="card">
+            <div class="card.pad" style="padding:18px 20px">
+              <div class="field">
+                <input class="input" id="custom-host" type="text" spellcheck="false" autocomplete="off"
+                       placeholder="ads.example.com" aria-label="Host to block">
+                <button type="button" class="btn" id="add-host">Block host</button>
+              </div>
+            </div>
+            <div class="list" id="custom-list">
+              <div class="empty">No custom hosts.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="notice info" id="remote-note" hidden></div>
+          <div class="notice">
+            <strong>Whoa, HTTPS?</strong>&nbsp;HTTPS traffic is tunnelled through CONNECT and only the destination hostname is inspected. There is no TLS interception and no traffic decryption.
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- integrity -->
+      <section class="panel hidden" data-panel="integrity">
+        <div class="section">
+          <div class="section-title">
+            <h2>Protection</h2>
+            <span class="tiny">Hybrid detection: static layout analysis plus runtime click interception checks.</span>
+          </div>
+          <div class="card rows">
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Integrity Protection <span class="chip" id="integrity-chip">on</span></div>
+                <div class="row-desc">Detects near-invisible full-page overlays and click-interception layers, then lets your click reach the real target.</div>
+              </div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="integrity-toggle" checked><span></span></label></div>
+            </div>
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Click-through</div>
+                <div class="row-desc">When an overlay intercepts a click, retarget the gesture to the element below it. Turn off to only detect and report.</div>
+              </div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="click-through-toggle" checked><span></span></label></div>
+            </div>
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Sensitivity</div>
+                <div class="row-desc">Relaxed acts only on obvious full-screen click-jackers. Strict also neutralizes large, high-z-index transparent layers.</div>
+              </div>
+              <div class="row-side">
+                <div class="segmented" id="sensitivity" role="group" aria-label="Detection sensitivity">
+                  <button type="button" data-sensitivity="relaxed">Relaxed</button>
+                  <button type="button" data-sensitivity="balanced" class="active">Balanced</button>
+                  <button type="button" data-sensitivity="strict">Strict</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><h2>Current site</h2></div>
+          <div class="card rows">
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title" id="site-host">No website loaded</div>
+                <div class="row-desc">Pause protection for this site only. Useful when a site uses a legitimate transparent interaction layer.</div>
+              </div>
+              <div class="row-side">
+                <span class="chip" id="site-chip">not paused</span>
+                <label class="switch"><input type="checkbox" id="site-allow"><span></span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h2>This page</h2>
+            <span class="tiny" id="page-last-action">No action taken.</span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-value" id="i-scanned">0</div><div class="stat-label">Elements scanned</div></div>
+            <div class="stat"><div class="stat-value" id="i-suspicious">0</div><div class="stat-label">Suspicious</div></div>
+            <div class="stat"><div class="stat-value" id="i-neutralized">0</div><div class="stat-label">Neutralized</div></div>
+            <div class="stat"><div class="stat-value" id="i-through">0</div><div class="stat-label">Click-throughs</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="card pad">
+            <h3>What counts as suspicious?</h3>
+            <p>The engine looks for elements that are nearly or fully transparent, positioned above page content, large enough to cover a meaningful part of the viewport, accepting pointer events, and empty of visible content. It ignores open dialogs, visible modals, small badges and elements explicitly marked as legitimate.</p>
+            <p>Click-through happens at gesture time: the blocking chain is temporarily disabled, the browser delivers the click to the element underneath, and the layer is restored shortly after. High-confidence static click-jackers can be neutralized for the lifetime of the page.</p>
+            <p class="tiny">Browser security prevents a script from forging a trusted click. The engine first tries to let the real hardware gesture reach the underlay; a synthetic fallback is used when the browser has already fixed the click target.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <button type="button" class="btn" id="integrity-test">Open Integrity self-test</button>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------- filters -->
+      <section class="panel hidden" data-panel="filters">
+        <div class="section">
+          <div class="section-title">
+            <h2>Filter lists</h2>
+            <button type="button" class="btn small" id="refresh-lists">Refresh remote lists</button>
+          </div>
+          <div class="card list" id="filter-lists">
+            <div class="empty">Loading filter lists…</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h2>Add a remote list</h2>
+            <span class="tiny">Host-rule syntax: hosts files and <code>||host^</code> rules. Path/option rules are counted and skipped.</span>
+          </div>
+          <div class="card pad">
+            <div class="field">
+              <input class="input" id="remote-url" type="url" spellcheck="false" autocomplete="off"
+                     placeholder="https://example.com/hosts.txt" aria-label="Remote filter list URL">
+              <button type="button" class="btn" id="add-remote">Download list</button>
+            </div>
+            <p class="tiny">The list is cached in the Integrity Browser config directory and loaded offline on later starts. Lists larger than 8 MiB are rejected.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="notice">
+            Built-in lists are compiled into the binary and can be toggled but not deleted. Remote and custom lists are stored locally. Filtering is host-based: a rule such as <code>||example.com^$image</code> is skipped because blocking the whole host would over-block.
+          </div>
+        </div>
+      </section>
+
+      <!-- --------------------------------------------------------------- about -->
+      <section class="panel hidden" data-panel="about">
+        <div class="section">
+          <div class="card pad">
+            <h2>Integrity Browser <span class="chip" id="about-version">0.1.0</span></h2>
+            <p>A functional MVP built with Rust, <code>wry</code>, <code>tao</code> and WebKitGTK/WebView2. The browser chrome is HTML/CSS/JS; the page renderer is the platform webview; filtering and state live in Rust.</p>
+            <p>The Linux build uses two GTK container rows instead of Tauri's multiwebview runtime, which places child webviews in a shared box and breaks fixed-height chrome layout. See <code>docs/architecture.md</code> in the source tree.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="card pad">
+            <h3>Privacy model</h3>
+            <p>No telemetry, no accounts, no cloud sync. Settings and cached filter lists live in the platform config directory. The filtering proxy binds only to <code>127.0.0.1</code> on an ephemeral port. Local destinations are never blocked. HTTPS is not intercepted.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="card pad">
+            <h3>Known limitations</h3>
+            <p>Tabs share one content webview, so switching tabs reloads the page. Cross-origin iframe content cannot be inspected for overlays. Page scripts can see the engine and may try to evade heuristics. Synthetic fallback clicks are not <code>isTrusted</code>. HTTPS filtering is hostname-only.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="card pad">
+            <h3>Test it</h3>
+            <p>Run <code>cargo test --workspace</code> for the Rust logic, then open the Integrity self-test page for overlay scenarios. The self-test page also runs standalone in any modern browser.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-stack" id="toasts" aria-live="polite"></div>
+  <script src="internal.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>
