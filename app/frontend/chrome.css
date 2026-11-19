@@ -82,9 +82,11 @@ button {
 }
 
 .brand-mark {
+  display: block;
   width: 21px;
   height: 21px;
-  filter: drop-shadow(0 0 8px rgba(103, 232, 195, 0.22));
+  object-fit: contain;
+  border-radius: 4px;
 }
 
 .brand-name {

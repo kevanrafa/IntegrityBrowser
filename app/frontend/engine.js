@@ -37,12 +37,14 @@
   const state = {
     enabled: true,
     clickThrough: true,
+    blockHiddenTabs: false,
     sensitivity: "balanced",
     host: location.hostname || "",
     scanned: 0,
     suspicious: 0,
     neutralized: 0,
     clickThroughs: 0,
+    hiddenTabsBlocked: 0,
     lastAction: "",
   };
 
@@ -59,6 +61,8 @@
   let lastToastAt = 0;
   let lastThrough = null;
   let synthetic = false;
+  let openGuardArmed = false;
+  let openGuardTimer = 0;
   const disarmTimers = new Set();
 
   /* --------------------------------------------------------------- IPC */
@@ -96,6 +100,7 @@
       suspicious: state.suspicious,
       neutralized: state.neutralized,
       clickThroughs: state.clickThroughs,
+      hiddenTabsBlocked: state.hiddenTabsBlocked,
     });
   }
 
@@ -620,8 +625,152 @@
     }, 0);
   }
 
+  /* --------------------------------------------------- hidden new-tab links */
+
+  function transparentColor(value) {
+    const text = String(value || "").trim();
+    if (!text || text === "transparent") return true;
+    const match = text.match(/^rgba?\([^)]*?,\s*([0-9.]+)\s*\)$/i);
+    return Boolean(match && Number(match[1]) === 0);
+  }
+
+  function opensNewTab(node) {
+    const target = String(node.getAttribute("target") || "").toLowerCase();
+    return target === "_blank" || target === "_new" || target === "blank";
+  }
+
+  function hiddenLink(node) {
+    let opacity = 1;
+    let current = node;
+    for (
+      let depth = 0;
+      current && depth < 8 && current !== document.documentElement;
+      depth += 1
+    ) {
+      if (isOurUi(current)) return false;
+      const record = records.get(current);
+      if (record && record.suspicious) return true;
+      let style = null;
+      try {
+        style = getComputedStyle(current);
+      } catch (_err) {
+        style = null;
+      }
+      if (style) {
+        if (style.visibility === "hidden" || style.display === "none") return true;
+        const value = parseFloat(style.opacity);
+        if (Number.isFinite(value)) opacity *= Math.max(0, Math.min(1, value));
+      }
+      current = current.parentElement;
+    }
+    if (opacity <= 0.15) return true;
+
+    const rect = node.getBoundingClientRect();
+    const viewport = Math.max(1, window.innerWidth * window.innerHeight);
+    if ((rect.width * rect.height) / viewport < 0.25) return false;
+    let style = null;
+    try {
+      style = getComputedStyle(node);
+    } catch (_err) {
+      style = null;
+    }
+    const hasText = String(node.textContent || "").trim().length > 0;
+    return Boolean(
+      style &&
+        transparentColor(style.backgroundColor) &&
+        (!hasText || transparentColor(style.color))
+    );
+  }
+
+  function hiddenBlankLink(target) {
+    let node = target && target.nodeType === 1 ? target : null;
+    let anchor = null;
+    for (
+      let depth = 0;
+      node && depth < 8 && node !== document.documentElement;
+      depth += 1
+    ) {
+      if (isOurUi(node)) return null;
+      if (
+        typeof node.tagName === "string" &&
+        node.tagName.toUpperCase() === "A" &&
+        node.hasAttribute("href")
+      ) {
+        anchor = node;
+        break;
+      }
+      node = node.parentElement;
+    }
+    if (!anchor || !opensNewTab(anchor)) return null;
+    return hiddenLink(anchor) ? anchor : null;
+  }
+
+  function openStub() {
+    const doc = {
+      open() {},
+      close() {},
+      write() {},
+      writeln() {},
+    };
+    return {
+      closed: false,
+      document: doc,
+      location: { href: "" },
+      opener: window,
+      focus() {},
+      blur() {},
+      close() {
+        this.closed = true;
+      },
+      moveTo() {},
+      resizeTo() {},
+      scrollTo() {},
+      print() {},
+    };
+  }
+
+  function installOpenGuard() {
+    const nativeOpen = window.open;
+    if (typeof nativeOpen !== "function") return;
+    try {
+      window.open = function () {
+        if (state.enabled && state.blockHiddenTabs && openGuardArmed) {
+          return openStub();
+        }
+        return nativeOpen.apply(this, arguments);
+      };
+    } catch (_err) {
+      /* a page with a non-writable window.open keeps its native behaviour */
+    }
+  }
+
+  function blockHiddenTabClick(event) {
+    if (!state.enabled || !state.blockHiddenTabs) return false;
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      return false;
+    }
+    const link = hiddenBlankLink(event.target);
+    if (!link) return false;
+    // Cancel only the browser action. Page handlers still receive the click,
+    // so the site sees the gesture without getting a new tab.
+    event.preventDefault();
+    state.hiddenTabsBlocked += 1;
+    state.lastAction = "blocked a hidden link that opens a new tab";
+    openGuardArmed = true;
+    clearTimeout(openGuardTimer);
+    openGuardTimer = setTimeout(() => {
+      openGuardArmed = false;
+    }, 300);
+    notify("Hidden new-tab link blocked. Page click was kept.");
+    send({ type: "integrity", event: "hidden_tab_blocked" });
+    report(true);
+    return true;
+  }
+
   function onClick(event) {
-    if (synthetic || !state.enabled || !state.clickThrough) return;
+    if (synthetic || !state.enabled) return;
+    if (blockHiddenTabClick(event)) return;
+    if (!state.clickThrough) return;
     if (!lastThrough || Date.now() - lastThrough.at > 700) return;
     const suspects = suspectsFor(event.target);
     if (!suspects.length) return;
@@ -639,6 +788,9 @@
     if (!config || typeof config !== "object") return;
     if (typeof config.enabled === "boolean") state.enabled = config.enabled;
     if (typeof config.clickThrough === "boolean") state.clickThrough = config.clickThrough;
+    if (typeof config.blockHiddenTabs === "boolean") {
+      state.blockHiddenTabs = config.blockHiddenTabs;
+    }
     if (typeof config.masterEnabled === "boolean" && typeof config.enabled !== "boolean") {
       state.enabled = config.masterEnabled && !config.siteAllowed;
     }
@@ -662,12 +814,14 @@
     return {
       enabled: state.enabled,
       clickThrough: state.clickThrough,
+      blockHiddenTabs: state.blockHiddenTabs,
       sensitivity: state.sensitivity,
       host: state.host || location.hostname || "",
       scanned: state.scanned,
       suspicious: state.suspicious,
       neutralized: state.neutralized,
       clickThroughs: state.clickThroughs,
+      hiddenTabsBlocked: state.hiddenTabsBlocked,
       lastAction: state.lastAction,
     };
   }
@@ -704,6 +858,7 @@
   window.addEventListener("click", onClick, true);
 
   function start() {
+    installOpenGuard();
     const boot = () => {
       ensureToastHost();
       requestConfig(0);

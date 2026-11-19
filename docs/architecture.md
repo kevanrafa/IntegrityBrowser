@@ -164,6 +164,29 @@ the page world and is deliberately best-effort:
    land there;
 5. report stats and actions over IPC.
 
+### Hidden new-tab blocking
+
+The `integrity_block_hidden_tabs` setting is an opt-in strict mode. It is
+independent of the sensitivity preset because it changes browser navigation
+behaviour, not just overlay classification.
+
+The engine wraps `window.open` at document start. The wrapper forwards every call
+to the native function unless a hidden-link click was just blocked. In that case
+it returns a small stub so a page handler does not throw while trying to use the
+returned window.
+
+A capture-phase `click` listener finds the nearest `a[href]` with a `_blank`
+target and checks whether the link or an ancestor is effectively invisible:
+low accumulated opacity, hidden/display:none, a suspicious overlay record, or a
+large transparent textless box. A match calls `preventDefault()` but deliberately
+does not call `stopPropagation()`. That distinction is the whole feature: the
+browser cancels the navigation while the page's click handlers still observe the
+gesture. Modified clicks bypass the check so the user keeps explicit control.
+
+The block is counted in page stats and reported to Rust as
+`hidden_tab_blocked`. The setting is persisted and pushed into the content
+webview through `content_config()` under `blockHiddenTabs`.
+
 It never touches `document.cookie`, storage, or network APIs, and it never
 receives settings authority. A hostile page can tamper with it, which is why the
 README describes it as mitigation rather than a security boundary.

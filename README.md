@@ -47,6 +47,9 @@ a transparent layer swallowed the click” attacks:
    visible content, dialogs/`popover` content, and explicit opt-out markers are
    not neutralized.
 5. Detection sensitivity: **Relaxed**, **Balanced** (default), **Strict**.
+6. An independent, very strict **Block hidden new-tab links** option. Invisible
+   `target="_blank"` links are counted as clicks by the page, but the browser does
+   not open a tab. Modified clicks (Ctrl/Shift/Alt/Meta) still work normally.
 
 The engine is best-effort protection, not a security boundary. A hostile page can
 tamper with page JavaScript. The real security boundary is the Rust IPC channel
@@ -289,6 +292,25 @@ Sensitivity presets (coverage / opacity thresholds):
 | Balanced | Default; large semi-transparent click-catchers |
 | Strict | Aggressive; also catches smaller and more visible layers |
 
+### Hidden new-tab links
+
+The **Block hidden new-tab links** switch is separate from sensitivity. Enable it
+for the strictest behaviour:
+
+- At document start, `window.open` is wrapped. During a blocked hidden-link click
+  it returns a harmless stub, so a page handler that calls `window.open` cannot
+  create a window either.
+- On a capture-phase `click`, the engine finds the nearest `a[href]` whose target
+  is `_blank`. If that link or an ancestor is near-invisible (low opacity,
+  transparent and textless, hidden, or already flagged as a suspicious overlay),
+  the engine calls `preventDefault()` and leaves event propagation alone.
+- The site's own click handlers still run, so analytics and handlers see the
+  gesture. The tab stays put.
+- Clicks with Ctrl, Meta, Shift or Alt are skipped, so a deliberate "open in new
+  tab" still works.
+- Each block increments the page statistic **Hidden tabs blocked** and reports an
+  event to the Rust side.
+
 At click time the engine temporarily disables `pointer-events` on the flagged
 layer, resolves `document.elementFromPoint()`, restores styles, and lets the
 underlying element receive the interaction. This is why the engine avoids
@@ -344,9 +366,10 @@ settings normalization/persistence, platform URL mapping). `cargo check
 
 Open **Settings → About → Run the Integrity self-test** or **Integrity → Open
 Integrity self-test** in the running browser. The harness lives at
-`app/frontend/tests/integrity-harness.html` and exercises eight scenarios:
-static overlays, click-through, legitimate transparent elements, opt-outs,
-dialogs, and neutered overlays.
+`app/frontend/tests/integrity-harness.html` and exercises twelve scenarios:
+static overlays, stacked layers, an invisible iframe, click-through, legitimate
+transparent elements, opt-outs, dialogs, neutered overlays, invisible `_blank`
+links, visible `_blank` links, modified clicks and `window.open` suppression.
 
 The harness also runs standalone in any modern browser. Serve the frontend
 directory rather than opening `file://`:
@@ -357,7 +380,7 @@ python3 -m http.server 8123
 # then open http://127.0.0.1:8123/tests/integrity-harness.html
 ```
 
-Expected result: all 8 scenarios pass, with no console errors.
+Expected result: all 12 scenarios pass, with no console errors.
 
 ### Manual smoke checklist
 
@@ -365,7 +388,8 @@ Expected result: all 8 scenarios pass, with no console errors.
 2. Navigate to an HTTPS site; confirm the address bar, title and tab update.
 3. Open Privacy settings; toggle ad blocking; reload; confirm persistence in
    `settings.json`.
-4. Open Integrity settings; toggle the global switch and per-site pause.
+4. Open Integrity settings; toggle the global switch, per-site pause and
+   **Block hidden new-tab links**.
 5. Open the self-test harness; confirm neutralization and click-through work.
 6. Attempt a settings mutation from a regular web page console; confirm it is
    ignored.
@@ -391,7 +415,8 @@ IntegrityBrowser/
 │       ├── settings.html/js/css
 │       ├── engine.js          # Integrity Protection
 │       ├── internal.*         # shared internal-page helpers
-│       └── tests/             # overlay self-test harness
+│       ├── assets/logo.svg    # brand mark supplied by the project owner
+│       └── tests/             # overlay and hidden-link self-test harness
 ├── crates/integrity-core/
 │   └── src/
 │       ├── filters.rs         # host-rule engine

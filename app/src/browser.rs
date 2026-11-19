@@ -71,6 +71,7 @@ pub struct PageIntegrityStats {
     pub suspicious: u64,
     pub neutralized: u64,
     pub click_throughs: u64,
+    pub hidden_tabs_blocked: u64,
     pub host: String,
     pub last_action: String,
 }
@@ -366,6 +367,11 @@ impl Browser {
         self.persist();
     }
 
+    pub fn toggle_block_hidden_tabs(&mut self, enabled: bool) {
+        self.settings.integrity_block_hidden_tabs = enabled;
+        self.persist();
+    }
+
     pub fn set_site_allowed(&mut self, allowed: bool) {
         let host = self.allowlist_target_host();
         if host.is_empty() {
@@ -538,6 +544,7 @@ impl Browser {
             "siteAllowed": self.site_allowed(),
             "sensitivity": self.settings.integrity_sensitivity.as_str(),
             "clickThrough": self.settings.integrity_click_through,
+            "blockHiddenTabs": self.settings.integrity_block_hidden_tabs,
             "host": self.active_host(),
         })
     }
@@ -611,6 +618,7 @@ impl Browser {
                 "enabled": self.integrity_effective(),
                 "siteAllowed": self.site_allowed(),
                 "clickThrough": self.settings.integrity_click_through,
+                "blockHiddenTabs": self.settings.integrity_block_hidden_tabs,
                 "sensitivity": self.settings.integrity_sensitivity.as_str(),
                 "targetHost": self.allowlist_target_host(),
                 "targetSiteAllowed": self
@@ -621,6 +629,7 @@ impl Browser {
                     "suspicious": self.page_stats.suspicious,
                     "neutralized": self.page_stats.neutralized,
                     "clickThroughs": self.page_stats.click_throughs,
+                    "hiddenTabsBlocked": self.page_stats.hidden_tabs_blocked,
                     "host": self.page_stats.host,
                     "lastAction": self.page_stats.last_action,
                 }

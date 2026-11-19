@@ -250,6 +250,7 @@ impl App {
             "adblock" => self.browser.toggle_adblock(enabled),
             "trackers" => self.browser.toggle_trackers(enabled),
             "click_through" => self.browser.toggle_click_through(enabled),
+            "block_hidden_tabs" => self.browser.toggle_block_hidden_tabs(enabled),
             _ => return,
         }
         self.settings_changed();
@@ -335,6 +336,20 @@ impl App {
                 if let Some(enabled) = value.get("enabled").and_then(Value::as_bool) {
                     self.browser.toggle_click_through(enabled);
                     self.settings_changed();
+                }
+            }
+            "toggle_block_hidden_tabs" => {
+                if let Some(enabled) = value.get("enabled").and_then(Value::as_bool) {
+                    self.browser.toggle_block_hidden_tabs(enabled);
+                    self.settings_changed();
+                    self.toast(
+                        if enabled {
+                            "Hidden new-tab links are blocked."
+                        } else {
+                            "Hidden new-tab links are allowed."
+                        },
+                        "info",
+                    );
                 }
             }
             "set_sensitivity" => {
@@ -505,6 +520,8 @@ impl App {
                         self.browser.page_stats.neutralized = clamped(&value, "neutralized");
                         self.browser.page_stats.click_throughs =
                             clamped(&value, "clickThroughs");
+                        self.browser.page_stats.hidden_tabs_blocked =
+                            clamped(&value, "hiddenTabsBlocked");
                         self.browser.page_stats.host = host;
                         self.emit_state();
                     }
@@ -516,6 +533,11 @@ impl App {
                     "neutralized" => {
                         self.browser.page_stats.last_action =
                             "neutralized a suspicious overlay".into();
+                        self.emit_state();
+                    }
+                    "hidden_tab_blocked" => {
+                        self.browser.page_stats.last_action =
+                            "blocked a hidden link that opens a new tab".into();
                         self.emit_state();
                     }
                     _ => {}
@@ -551,8 +573,9 @@ impl App {
             }
             // Trusted settings page: forward the full command set it needs.
             // Ordinary web pages never reach this arm.
-            "toggle_integrity" | "toggle_click_through" | "set_sensitivity"
-            | "toggle_site_allowlist" | "toggle_adblock" | "toggle_tracker_blocking"
+            "toggle_integrity" | "toggle_click_through" | "toggle_block_hidden_tabs"
+            | "set_sensitivity" | "toggle_site_allowlist" | "toggle_adblock"
+            | "toggle_tracker_blocking"
             | "toggle_filter_list" | "remove_filter_list" | "add_custom_host"
             | "remove_custom_host" | "add_remote_list" | "refresh_filter_lists"
             | "reset_stats"

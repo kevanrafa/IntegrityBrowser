@@ -215,7 +215,7 @@
     integrityBtn.title =
       "Integrity Protection: " +
       (integrity.enabled
-        ? `on (${integrity.sensitivity || "balanced"}). ${Number(page.clickThroughs || 0)} click-through(s).`
+        ? `on (${integrity.sensitivity || "balanced"}). ${Number(page.clickThroughs || 0)} click-through(s), ${Number(page.hiddenTabsBlocked || 0)} hidden tab(s) blocked.`
         : integrity.masterEnabled
           ? "paused for this site."
           : "off.");
@@ -367,7 +367,7 @@
         enabled: true,
         siteAllowed: false,
         sensitivity: "balanced",
-        page: { suspicious: 0, neutralized: 0, clickThroughs: 0 },
+        page: { suspicious: 0, neutralized: 0, clickThroughs: 0, hiddenTabsBlocked: 0 },
       },
       privacy: { stats: { blocked: 0, ads: 0, trackers: 0 } },
     };

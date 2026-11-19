@@ -158,6 +158,7 @@
     "tracker-toggle": ["toggle_tracker_blocking", "enabled"],
     "integrity-toggle": ["toggle_integrity", "enabled"],
     "click-through-toggle": ["toggle_click_through", "enabled"],
+    "hidden-tabs-toggle": ["toggle_block_hidden_tabs", "enabled"],
   };
 
   Object.keys(toggleMap).forEach((id) => {
@@ -397,6 +398,7 @@
     I.setText("i-suspicious", I.number(page.suspicious));
     I.setText("i-neutralized", I.number(page.neutralized));
     I.setText("i-through", I.number(page.clickThroughs));
+    I.setText("i-hidden-tabs", I.number(page.hiddenTabsBlocked));
     I.setText(
       "page-last-action",
       page.lastAction && page.lastAction.trim() ? page.lastAction : "No action taken."
@@ -414,6 +416,7 @@
     setToggle("tracker-toggle", privacy.trackerBlockingEnabled);
     setToggle("integrity-toggle", integrity.masterEnabled);
     setToggle("click-through-toggle", integrity.clickThrough);
+    setToggle("hidden-tabs-toggle", integrity.blockHiddenTabs);
     suppress = false;
 
     setChip("adblock-chip", privacy.adblockEnabled ? "on" : "off", privacy.adblockEnabled ? "on" : "off");
@@ -426,6 +429,11 @@
       "integrity-chip",
       integrity.masterEnabled ? "on" : "off",
       integrity.masterEnabled ? "on" : "off"
+    );
+    setChip(
+      "hidden-tabs-chip",
+      integrity.blockHiddenTabs ? "on" : "off",
+      integrity.blockHiddenTabs ? "on" : "off"
     );
 
     setSensitivity(integrity.sensitivity || "balanced");
@@ -474,10 +482,18 @@
       integrity: {
         masterEnabled: true,
         clickThrough: true,
+        blockHiddenTabs: false,
         sensitivity: "balanced",
         targetHost: "",
         targetSiteAllowed: false,
-        page: { scanned: 0, suspicious: 0, neutralized: 0, clickThroughs: 0, lastAction: "" },
+        page: {
+          scanned: 0,
+          suspicious: 0,
+          neutralized: 0,
+          clickThroughs: 0,
+          hiddenTabsBlocked: 0,
+          lastAction: "",
+        },
       },
       privacy: {
         adblockEnabled: true,

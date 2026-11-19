@@ -76,6 +76,22 @@
     document.querySelectorAll("[data-ib-scenario]").forEach((node) => node.remove());
   }
 
+  function engineStats() {
+    const engine = window.__IntegrityBrowser;
+    return engine && typeof engine.stats === "function" ? engine.stats() : {};
+  }
+
+  function hiddenAnchor() {
+    const anchor = document.createElement("a");
+    anchor.setAttribute("data-ib-scenario", "");
+    anchor.href = "about:blank";
+    anchor.target = "_blank";
+    anchor.style.cssText =
+      "position:fixed;inset:0;z-index:2147483000;background:transparent;" +
+      "opacity:0.001;pointer-events:auto";
+    return anchor;
+  }
+
   const CHECKS = [
     {
       id: "clickjacker",
@@ -241,6 +257,158 @@
       },
       timeout: 4000,
     },
+    {
+      id: "hidden-blank",
+      title: "Invisible link that opens a new tab",
+      expect: "The click reaches the page, but navigation is cancelled.",
+      positive: true,
+      setup() {
+        const anchor = hiddenAnchor();
+        let clicks = 0;
+        let blockedByEngine = false;
+        const before = Number(engineStats().hiddenTabsBlocked || 0);
+        anchor.addEventListener("click", (event) => {
+          clicks += 1;
+          blockedByEngine = event.defaultPrevented;
+          event.preventDefault();
+        });
+        document.body.appendChild(anchor);
+        anchor.click();
+        return {
+          nodes: [anchor],
+          clicks: () => clicks,
+          blocked: () => blockedByEngine,
+          before: before,
+        };
+      },
+      verify(refs) {
+        return (
+          refs.clicks() === 1 &&
+          refs.blocked() &&
+          Number(engineStats().hiddenTabsBlocked || 0) > refs.before
+        );
+      },
+      timeout: 4000,
+    },
+    {
+      id: "visible-blank",
+      title: "Visible link that opens a new tab",
+      expect: "Left alone: only invisible links are cancelled.",
+      positive: false,
+      settle: 250,
+      setup() {
+        const anchor = document.createElement("a");
+        anchor.setAttribute("data-ib-scenario", "");
+        anchor.href = "about:blank";
+        anchor.target = "_blank";
+        anchor.textContent = "Visible link";
+        anchor.style.cssText =
+          "position:fixed;left:24px;top:24px;z-index:2147483000;padding:8px 12px;" +
+          "background:#1b2130;color:#e9eef7;font:13px system-ui,sans-serif";
+        let clicks = 0;
+        let blockedByEngine = false;
+        const before = Number(engineStats().hiddenTabsBlocked || 0);
+        anchor.addEventListener("click", (event) => {
+          clicks += 1;
+          blockedByEngine = event.defaultPrevented;
+          event.preventDefault();
+        });
+        document.body.appendChild(anchor);
+        anchor.click();
+        return {
+          nodes: [anchor],
+          clicks: () => clicks,
+          blocked: () => blockedByEngine,
+          before: before,
+        };
+      },
+      verify(refs) {
+        return (
+          refs.clicks() === 1 &&
+          !refs.blocked() &&
+          Number(engineStats().hiddenTabsBlocked || 0) === refs.before
+        );
+      },
+    },
+    {
+      id: "modified-click",
+      title: "Modified click on an invisible link",
+      expect: "Left alone: Ctrl keeps the browser's own new-tab behaviour.",
+      positive: false,
+      settle: 250,
+      setup() {
+        const anchor = hiddenAnchor();
+        let clicks = 0;
+        let blockedByEngine = false;
+        const before = Number(engineStats().hiddenTabsBlocked || 0);
+        anchor.addEventListener("click", (event) => {
+          clicks += 1;
+          blockedByEngine = event.defaultPrevented;
+          event.preventDefault();
+        });
+        document.body.appendChild(anchor);
+        anchor.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            ctrlKey: true,
+            button: 0,
+          })
+        );
+        return {
+          nodes: [anchor],
+          clicks: () => clicks,
+          blocked: () => blockedByEngine,
+          before: before,
+        };
+      },
+      verify(refs) {
+        return (
+          refs.clicks() === 1 &&
+          !refs.blocked() &&
+          Number(engineStats().hiddenTabsBlocked || 0) === refs.before
+        );
+      },
+    },
+    {
+      id: "hidden-open",
+      title: "Invisible link using window.open",
+      expect: "The handler runs, but window.open does not create a real window.",
+      positive: true,
+      setup() {
+        const anchor = hiddenAnchor();
+        let clicks = 0;
+        let blockedByEngine = false;
+        let opened = null;
+        const before = Number(engineStats().hiddenTabsBlocked || 0);
+        anchor.addEventListener("click", (event) => {
+          clicks += 1;
+          blockedByEngine = event.defaultPrevented;
+          opened = window.open("about:blank");
+          event.preventDefault();
+        });
+        document.body.appendChild(anchor);
+        anchor.click();
+        return {
+          nodes: [anchor],
+          clicks: () => clicks,
+          blocked: () => blockedByEngine,
+          opened: () => opened,
+          before: before,
+        };
+      },
+      verify(refs) {
+        const opened = refs.opened();
+        const stubbed = Boolean(opened && !("top" in opened));
+        return (
+          refs.clicks() === 1 &&
+          refs.blocked() &&
+          stubbed &&
+          Number(engineStats().hiddenTabsBlocked || 0) > refs.before
+        );
+      },
+      timeout: 4000,
+    },
   ];
 
   /* ----------------------------------------------------------------- cards */
@@ -328,6 +496,7 @@
       window.__IntegrityBrowser.configure({
         enabled: true,
         clickThrough: true,
+        blockHiddenTabs: true,
         sensitivity: "balanced",
       });
     }
@@ -385,12 +554,15 @@
       (stats.enabled ? "on" : "off") +
       " · click-through " +
       (stats.clickThrough ? "on" : "off") +
+      " · hidden tabs " +
+      (stats.blockHiddenTabs ? "on" : "off") +
       " · " +
       stats.sensitivity;
     setText("h-scanned", I.number(stats.scanned));
     setText("h-suspicious", I.number(stats.suspicious));
     setText("h-neutralized", I.number(stats.neutralized));
     setText("h-through", I.number(stats.clickThroughs));
+    setText("h-hidden", I.number(stats.hiddenTabsBlocked));
     setText("h-mode", stats.enabled ? stats.sensitivity : "off");
   }
 

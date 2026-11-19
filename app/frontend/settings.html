@@ -12,15 +12,7 @@
   <div class="settings-shell">
     <aside class="side">
       <div class="side-brand">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2.2 20 5.6v5.7c0 5.1-3.3 8.9-8 10.5-4.7-1.6-8-5.4-8-10.5V5.6L12 2.2Z" fill="url(#sideGrad)"/>
-          <path d="m8.4 12 2.4 2.4 4.9-5" fill="none" stroke="#081018" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-          <defs>
-            <linearGradient id="sideGrad" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#67e8c3"/><stop offset="1" stop-color="#4f8cff"/>
-            </linearGradient>
-          </defs>
-        </svg>
+        <img src="assets/logo.svg" alt="" aria-hidden="true">
         <span>Integrity</span>
       </div>
 
@@ -119,14 +111,14 @@
                 <div class="row-title">Block ads <span class="chip" id="adblock-chip">on</span></div>
                 <div class="row-desc">Uses the built-in ad host list and any enabled custom lists.</div>
               </div>
-              <div class="row-side"><label class="switch"><input type="checkbox" id="adblock-toggle" checked><span></span></label></div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="adblock-toggle" aria-label="Ad blocking" checked><span></span></label></div>
             </div>
             <div class="row">
               <div class="row-main">
                 <div class="row-title">Block trackers <span class="chip" id="tracker-chip">on</span></div>
                 <div class="row-desc">Blocks known analytics, advertising and fingerprinting hosts at the connection level.</div>
               </div>
-              <div class="row-side"><label class="switch"><input type="checkbox" id="tracker-toggle" checked><span></span></label></div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="tracker-toggle" aria-label="Tracker blocking" checked><span></span></label></div>
             </div>
           </div>
         </div>
@@ -194,14 +186,21 @@
                 <div class="row-title">Integrity Protection <span class="chip" id="integrity-chip">on</span></div>
                 <div class="row-desc">Detects near-invisible full-page overlays and click-interception layers, then lets your click reach the real target.</div>
               </div>
-              <div class="row-side"><label class="switch"><input type="checkbox" id="integrity-toggle" checked><span></span></label></div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="integrity-toggle" aria-label="Integrity Protection" checked><span></span></label></div>
             </div>
             <div class="row">
               <div class="row-main">
                 <div class="row-title">Click-through</div>
                 <div class="row-desc">When an overlay intercepts a click, retarget the gesture to the element below it. Turn off to only detect and report.</div>
               </div>
-              <div class="row-side"><label class="switch"><input type="checkbox" id="click-through-toggle" checked><span></span></label></div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="click-through-toggle" aria-label="Click-through" checked><span></span></label></div>
+            </div>
+            <div class="row">
+              <div class="row-main">
+                <div class="row-title">Block hidden new-tab links <span class="chip" id="hidden-tabs-chip">off</span></div>
+                <div class="row-desc">Very strict. Clicks on invisible links that open a new tab still reach the site, but no tab opens.</div>
+              </div>
+              <div class="row-side"><label class="switch"><input type="checkbox" id="hidden-tabs-toggle" aria-label="Block hidden new-tab links"><span></span></label></div>
             </div>
             <div class="row">
               <div class="row-main">
@@ -229,7 +228,7 @@
               </div>
               <div class="row-side">
                 <span class="chip" id="site-chip">not paused</span>
-                <label class="switch"><input type="checkbox" id="site-allow"><span></span></label>
+                <label class="switch"><input type="checkbox" id="site-allow" aria-label="Pause protection for this site"><span></span></label>
               </div>
             </div>
           </div>
@@ -240,11 +239,12 @@
             <h2>This page</h2>
             <span class="tiny" id="page-last-action">No action taken.</span>
           </div>
-          <div class="stat-grid">
+          <div class="stat-grid five">
             <div class="stat"><div class="stat-value" id="i-scanned">0</div><div class="stat-label">Elements scanned</div></div>
             <div class="stat"><div class="stat-value" id="i-suspicious">0</div><div class="stat-label">Suspicious</div></div>
             <div class="stat"><div class="stat-value" id="i-neutralized">0</div><div class="stat-label">Neutralized</div></div>
             <div class="stat"><div class="stat-value" id="i-through">0</div><div class="stat-label">Click-throughs</div></div>
+            <div class="stat"><div class="stat-value" id="i-hidden-tabs">0</div><div class="stat-label">Hidden tabs blocked</div></div>
           </div>
         </div>
 
@@ -254,6 +254,7 @@
             <p>The engine looks for elements that are nearly or fully transparent, positioned above page content, large enough to cover a meaningful part of the viewport, accepting pointer events, and empty of visible content. It ignores open dialogs, visible modals, small badges and elements explicitly marked as legitimate.</p>
             <p>Click-through happens at gesture time: the blocking chain is temporarily disabled, the browser delivers the click to the element underneath, and the layer is restored shortly after. High-confidence static click-jackers can be neutralized for the lifetime of the page.</p>
             <p class="tiny">Browser security prevents a script from forging a trusted click. The engine first tries to let the real hardware gesture reach the underlay; a synthetic fallback is used when the browser has already fixed the click target.</p>
+            <p>The hidden new-tab option cancels navigation on invisible <code>target="_blank"</code> links without stopping the page's click handlers. Clicks with Ctrl, Shift, Alt or Meta keep their normal behaviour.</p>
           </div>
         </div>
 

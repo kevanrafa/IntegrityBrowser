@@ -68,6 +68,8 @@ pub struct Settings {
     pub integrity_enabled: bool,
     pub integrity_sensitivity: Sensitivity,
     pub integrity_click_through: bool,
+    /// Suppress navigation from hidden links that open a new tab.
+    pub integrity_block_hidden_tabs: bool,
     /// Hostnames where Integrity Protection is paused by the user.
     pub site_allowlist: Vec<String>,
     pub adblock_enabled: bool,
@@ -85,6 +87,7 @@ impl Default for Settings {
             integrity_enabled: true,
             integrity_sensitivity: Sensitivity::Balanced,
             integrity_click_through: true,
+            integrity_block_hidden_tabs: false,
             site_allowlist: Vec::new(),
             adblock_enabled: true,
             tracker_blocking_enabled: true,
@@ -258,6 +261,7 @@ mod tests {
         assert_eq!(s.filter_lists.len(), 2);
         assert!(s.filter_lists.iter().all(|l| l.enabled));
         assert!(s.integrity_enabled);
+        assert!(!s.integrity_block_hidden_tabs);
         assert!(s.adblock_enabled && s.tracker_blocking_enabled);
     }
 
@@ -303,11 +307,13 @@ mod tests {
         let path = dir.path().join(SETTINGS_FILE);
         let mut s = Settings::default();
         s.integrity_sensitivity = Sensitivity::Strict;
+        s.integrity_block_hidden_tabs = true;
         s.adblock_enabled = false;
         s.custom_blocked_hosts.push("tracker.example".into());
         s.save_to(&path).unwrap();
         let loaded = Settings::load_from(&path).unwrap();
         assert_eq!(loaded.integrity_sensitivity, Sensitivity::Strict);
+        assert!(loaded.integrity_block_hidden_tabs);
         assert!(!loaded.adblock_enabled);
         assert_eq!(loaded.custom_blocked_hosts, vec!["tracker.example"]);
     }

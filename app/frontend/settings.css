@@ -33,10 +33,10 @@ body.settings {
   letter-spacing: -0.01em;
 }
 
-.side-brand svg {
+.side-brand img {
   width: 26px;
   height: 26px;
-  filter: drop-shadow(0 0 14px rgba(103, 232, 195, 0.28));
+  object-fit: contain;
 }
 
 .side-nav {
@@ -217,8 +217,16 @@ body.settings {
   display: block;
 }
 
+.stat-grid.five {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 /* Narrow windows: collapse the sidebar into a horizontal strip. */
 @media (max-width: 720px) {
+  .stat-grid.five {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .settings-shell {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
